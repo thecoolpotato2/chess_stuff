@@ -5,8 +5,10 @@ import java.util.List;
 
 public class Pawn implements Piece {
     private boolean dead;
-    public Pawn() {
-        dead = false;
+    private Color color;
+    public Pawn(Color color) {
+        this.dead = false;
+        this.color = color;
     }
     @Override
     public boolean isDead() {
@@ -38,5 +40,10 @@ public class Pawn implements Piece {
     @Override
     public PieceType getType() {
         return PieceType.PAWN;
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
     }
 }

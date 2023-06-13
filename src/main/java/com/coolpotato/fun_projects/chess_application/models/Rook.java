@@ -5,8 +5,10 @@ import java.util.List;
 
 public class Rook implements Piece {
     private boolean dead;
+    private Color color;
 
-    public Rook() {
+    public Rook(Color color) {
+        this.color = color;
         this.dead = false;
     }
     @Override
@@ -41,6 +43,11 @@ public class Rook implements Piece {
     @Override
     public PieceType getType() {
         return PieceType.ROOK;
+    }
+
+    @Override
+    public Color getColor() {
+        return this.color;
     }
 
 

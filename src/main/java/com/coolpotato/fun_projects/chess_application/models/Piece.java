@@ -14,4 +14,6 @@ public interface Piece {
     void kill();
 
     PieceType getType();
+
+    Color getColor();
 }

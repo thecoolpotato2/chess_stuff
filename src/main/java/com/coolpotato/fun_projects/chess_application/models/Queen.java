@@ -5,9 +5,11 @@ import java.util.List;
 
 public class Queen implements Piece{
     private boolean dead;
+    private Color color;
     private ArrayList<Coordinate> possibleDeltaCoordinates;
 
-    public Queen() {
+    public Queen(Color color) {
+        this.color = color;
         this.dead = false;
         this.possibleDeltaCoordinates = initializePossibleDeltaCoordinates();
     }
@@ -34,6 +36,11 @@ public class Queen implements Piece{
     @Override
     public PieceType getType() {
         return PieceType.QUEEN;
+    }
+
+    @Override
+    public Color getColor() {
+        return this.color;
     }
 
     private static ArrayList<Coordinate> initializePossibleDeltaCoordinates() {
