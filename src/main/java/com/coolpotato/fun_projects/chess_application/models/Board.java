@@ -7,13 +7,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Board {
-    private HashMap<Coordinate, Piece> pieces;
+    private HashMap<Coordinate, Piece> currentPieces;
 
     private Coordinate whiteKingPlacement;
     private Coordinate blackKingPlacement;
 
     public Board() {
-        this.pieces = initializeBoard();
+        this.currentPieces = initializeBoard();
         this.whiteKingPlacement = new Coordinate(0, 4);
         this.blackKingPlacement = new Coordinate(7, 4);
     }
@@ -57,10 +57,10 @@ public class Board {
         return pieces;
     }
 
-    public List<Coordinate> getValidPlacements(Coordinate currentCoordinate) {
+    public List<Coordinate> getValidPotentialMoves(Coordinate currentCoordinate) {
         ArrayList<Coordinate> validPlacements = new ArrayList<>();
 
-        Piece piece = this.pieces.get(currentCoordinate);
+        Piece piece = this.currentPieces.get(currentCoordinate);
 
         if (piece == null) {
             return validPlacements;
@@ -69,8 +69,14 @@ public class Board {
         List<Coordinate> potentialMoves = piece.getPossibleDeltaCoordinates();
 
         potentialMoves = filterOutOfBoundsMoves(potentialMoves, currentCoordinate);
-        potentialMoves = filterBlockedMoves(potentialMoves, currentCoordinate);
-        potentialMoves
+
+        //Knights are not blocked by anything
+        if(piece.getType() != PieceType.KNIGHT) {
+            potentialMoves = filterBlockedMoves(potentialMoves, currentCoordinate);
+        }
+        filterMovesCausingCheck(potentialMoves, currentCoordinate);
+
+        return potentialMoves;
     }
 
     private List<Coordinate>  filterOutOfBoundsMoves(List<Coordinate> potentialMoves, Coordinate currentLocation) {
@@ -85,6 +91,8 @@ public class Board {
         ArrayList<Coordinate> potentialSquares = (ArrayList<Coordinate>) potentialMoves.stream().map(p -> p.add(currentLocation)).toList();
         List<Coordinate> blockingSquares = getBlockingSquares(potentialMoves, currentLocation);
 
+        Color currentColor = currentPieces.get(currentLocation).getColor();
+
         blockingSquares
                 .forEach(
                         blockingSquare -> {
@@ -94,34 +102,66 @@ public class Board {
                             ).toList());
                         }
                 );
+
+        //Also remove the blocking squares themselves, if they are of the same color
+        potentialSquares.removeAll(blockingSquares.stream().filter(p -> {
+                Piece piece = currentPieces.get(p);
+                return piece.getColor() == currentColor;
+        }).toList());
+
         return potentialSquares.stream().map(p -> p.subtract(currentLocation)).toList();
     }
 
     private List<Coordinate> getBlockingSquares(List<Coordinate> potentialMoves, Coordinate currentLocation) {
         return potentialMoves.stream()
                 .map(move -> move.add(currentLocation))
-                .filter(coordinate -> this.pieces.get(coordinate) != null)
+                .filter(coordinate -> this.currentPieces.get(coordinate) != null)
                 .collect(Collectors.toList());
     }
 
-    private List<Coordinate> filterMovesCausingCheck(List<Coordinate> potentialMoves, Coordinate currentLocation) {
+    //This method assumes that out of bounds and blocked moves have already been filtered
+    private void filterMovesCausingCheck(List<Coordinate> potentialMoves, Coordinate currentLocation) {
+        HashMap<Coordinate, Piece> pieces = new HashMap<>();
+        pieces.putAll(this.currentPieces);
 
+         Piece currentPiece = pieces.get(currentLocation);
+
+         List<Coordinate> movesToBeFiltered = new ArrayList<>();
+
+         for(Coordinate potentialMove : potentialMoves) {
+             Coordinate newLocation = currentLocation.add(potentialMove);
+             pieces.remove(currentLocation);
+             pieces.put(newLocation, currentPiece);
+             boolean causesCheck = checkForCheck(pieces, currentPiece.getColor());
+
+             if(causesCheck) {
+                 movesToBeFiltered.add(potentialMove);
+             }
+
+             pieces.remove(newLocation);
+             pieces.put(currentPiece.getCurrentLocation(), currentPiece);
+         }
+
+         potentialMoves.removeAll(movesToBeFiltered);
     }
 
     //hehe
     //Also this should probably be refactored
-    private boolean checkForCheck(Coordinate currentLocation) {
-        Color currentColor = pieces.get(currentLocation).getColor();
-        Coordinate kingLocation = currentColor == Color.WHITE ? whiteKingPlacement : blackKingPlacement;
+    private boolean checkForCheck(HashMap<Coordinate, Piece> pieces, Color color) {
+        Coordinate kingLocation =
+                pieces.entrySet().stream().filter(
+                        e -> e.getValue().getType() == PieceType.KING && e.getValue().getColor() == color
+                ).map(e -> e.getKey())
+                        .findFirst().orElseThrow(() -> new IllegalArgumentException("No king of that color in provided map"));
         
         List<Piece> nearestPieces =
                 getAllPossibleDirections().
                         stream()
-                        .map(direction -> getNearestPieceForDirection(kingLocation, direction))
+                        .map(direction -> getNearestPieceForDirection(pieces, kingLocation, direction))
                         .toList();
 
         Optional<Piece> checkingPiece = nearestPieces.stream()
-                .filter(piece -> piece.getColor() != currentColor)
+                .filter(piece -> piece.getColor() != color)
                 .filter(piece -> piece.getType() != PieceType.PAWN && piece.getType() != PieceType.KNIGHT)
                 .filter(piece -> {
                     Direction direction = piece.getCurrentLocation().getDirectionToOtherCoordinate(kingLocation);
@@ -134,7 +174,7 @@ public class Board {
 
         //handle bitch ass pawns
         boolean pawnCheck = nearestPieces.stream()
-                .filter(piece -> piece.getType() == PieceType.PAWN && piece.getColor() != currentColor)
+                .filter(piece -> piece.getType() == PieceType.PAWN && piece.getColor() != color)
                 .map(p -> (Pawn) p)
                 .anyMatch(p -> {
                     List<Direction> checkingDirections = p.getCheckingDirections();
@@ -148,7 +188,7 @@ public class Board {
 
         //Handle knights
         List<Knight> opposingKnights = pieces.values().stream()
-                .filter(piece -> piece.getType() == PieceType.KNIGHT && piece.getColor() != currentColor)
+                .filter(piece -> piece.getType() == PieceType.KNIGHT && piece.getColor() != color)
                 .map(p -> (Knight) p).toList();
 
         return opposingKnights.stream()
@@ -158,7 +198,7 @@ public class Board {
                 });
     }
 
-    private Piece getNearestPieceForDirection(Coordinate currentLocation, Direction direction) {
+    private Piece getNearestPieceForDirection(HashMap<Coordinate, Piece> pieces, Coordinate currentLocation, Direction direction) {
 
         while(true) {
             Coordinate newLocation = currentLocation.addDirection(direction);
