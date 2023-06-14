@@ -17,11 +17,6 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public List<Coordinate> getPossibleDeltaCoordinates() {
-        return possibleDeltaCoordinates;
-    }
-
-    @Override
     public PieceType getType() {
         return PieceType.BISHOP;
     }

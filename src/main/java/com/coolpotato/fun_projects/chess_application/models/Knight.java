@@ -16,11 +16,6 @@ public class Knight extends Piece {
     }
 
     @Override
-    public List<Coordinate> getPossibleDeltaCoordinates() {
-        return this.possibleDeltaCoordinates;
-    }
-
-    @Override
     public PieceType getType() {
         return PieceType.KNIGHT;
     }

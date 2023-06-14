@@ -3,6 +3,7 @@ package com.coolpotato.fun_projects.chess_application.models;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Board {
@@ -119,8 +120,42 @@ public class Board {
                         .map(direction -> getNearestPieceForDirection(kingLocation, direction))
                         .toList();
 
-        //TODO refactor this
-        List<Coordinate> getEquivalentCoordinates = pieces.ke
+        Optional<Piece> checkingPiece = nearestPieces.stream()
+                .filter(piece -> piece.getColor() != currentColor)
+                .filter(piece -> piece.getType() != PieceType.PAWN && piece.getType() != PieceType.KNIGHT)
+                .filter(piece -> {
+                    Direction direction = piece.getCurrentLocation().getDirectionToOtherCoordinate(kingLocation);
+                    return piece.isPossibleMove(direction);
+                }).findAny();
+
+        if(checkingPiece.isPresent()) {
+            return true;
+        }
+
+        //handle bitch ass pawns
+        boolean pawnCheck = nearestPieces.stream()
+                .filter(piece -> piece.getType() == PieceType.PAWN && piece.getColor() != currentColor)
+                .map(p -> (Pawn) p)
+                .anyMatch(p -> {
+                    List<Direction> checkingDirections = p.getCheckingDirections();
+                    return checkingDirections.stream()
+                            .anyMatch(d -> p.getCurrentLocation().addDirection(d).equals(kingLocation));
+                });
+
+        if(pawnCheck) {
+            return true;
+        }
+
+        //Handle knights
+        List<Knight> opposingKnights = pieces.values().stream()
+                .filter(piece -> piece.getType() == PieceType.KNIGHT && piece.getColor() != currentColor)
+                .map(p -> (Knight) p).toList();
+
+        return opposingKnights.stream()
+                .anyMatch(knight -> {
+                    Direction direction = knight.getCurrentLocation().getDirectionToOtherCoordinate(kingLocation);
+                    return knight.isPossibleMove(direction);
+                });
     }
 
     private Piece getNearestPieceForDirection(Coordinate currentLocation, Direction direction) {

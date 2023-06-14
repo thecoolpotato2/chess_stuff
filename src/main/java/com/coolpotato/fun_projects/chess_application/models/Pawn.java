@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Pawn extends Piece {
+    private final List<Direction> checkingDirections;
 
     public Pawn(Color color, Coordinate currentLocation) {
         super(color, currentLocation);
         this.possibleDeltaCoordinates = initializePossibleDeltaCoordinates();
+        this.checkingDirections = initializeCheckingDirections();
     }
 
     @Override
@@ -45,5 +47,18 @@ public class Pawn extends Piece {
         }
 
         return this.possibleDeltaCoordinates;
+    }
+
+    public List<Direction> getCheckingDirections() {
+        return this.color == Color.WHITE ? checkingDirections : checkingDirections.stream()
+                .map(c -> new Direction(c.x, -1 * c.y)).toList();
+    }
+
+    private static final List<Direction> initializeCheckingDirections() {
+        ArrayList<Direction> checkingDirections = new ArrayList<>();
+        checkingDirections.add(new Direction(1, 1));
+        checkingDirections.add(new Direction(-1, 1));
+
+        return checkingDirections;
     }
 }

@@ -43,5 +43,11 @@ public abstract class Piece {
 
     void setCurrentLocation(Coordinate currentLocation) {
         this.currentLocation = currentLocation;
-    };
+    }
+
+    boolean isPossibleMove(Direction direction) {
+        boolean possibleMove = false;
+        return this.getPossibleDeltaCoordinates().stream().map(c -> new Direction(c.x, c.y))
+                .filter(d -> d.equals(direction)).findAny().isPresent();
+    }
 }

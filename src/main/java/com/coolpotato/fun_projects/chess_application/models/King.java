@@ -16,11 +16,6 @@ public class King extends Piece {
     }
 
     @Override
-    public List<Coordinate> getPossibleDeltaCoordinates() {
-        return possibleDeltaCoordinates;
-    }
-
-    @Override
     public PieceType getType() {
         return PieceType.KING;
     }
