@@ -3,20 +3,11 @@ package com.coolpotato.fun_projects.chess_application.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class King implements Piece {
+public class King extends Piece {
 
-    private boolean dead;
-    private Color color;
-    private ArrayList<Coordinate> possibleDeltaCoordinates;
-
-    public King(Color color) {
-        this.color = color;
-        this.dead = false;
+    public King(Color color, Coordinate currentLocation) {
+        super(color, currentLocation);
         this.possibleDeltaCoordinates = initializePossibleDeltaCoordinates();
-    }
-    @Override
-    public boolean isDead() {
-        return dead;
     }
 
     @Override
@@ -30,18 +21,8 @@ public class King implements Piece {
     }
 
     @Override
-    public void kill() {
-        this.dead = true;
-    }
-
-    @Override
     public PieceType getType() {
         return PieceType.KING;
-    }
-
-    @Override
-    public Color getColor() {
-        return this.color;
     }
 
     private static ArrayList<Coordinate> initializePossibleDeltaCoordinates() {

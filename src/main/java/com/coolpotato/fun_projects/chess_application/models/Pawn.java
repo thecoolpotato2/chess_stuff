@@ -3,16 +3,11 @@ package com.coolpotato.fun_projects.chess_application.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Pawn implements Piece {
-    private boolean dead;
-    private Color color;
-    public Pawn(Color color) {
-        this.dead = false;
-        this.color = color;
-    }
-    @Override
-    public boolean isDead() {
-        return this.dead;
+public class Pawn extends Piece {
+
+    public Pawn(Color color, Coordinate currentLocation) {
+        super(color, currentLocation);
+        this.possibleDeltaCoordinates = initializePossibleDeltaCoordinates();
     }
 
     @Override
@@ -20,8 +15,7 @@ public class Pawn implements Piece {
         return 1;
     }
 
-    @Override
-    public List<Coordinate> getPossibleDeltaCoordinates() {
+    private static ArrayList<Coordinate> initializePossibleDeltaCoordinates() {
         ArrayList<Coordinate> deltaCoordinates = new ArrayList<>();
 
         deltaCoordinates.add(new Coordinate(0, 1));
@@ -33,11 +27,6 @@ public class Pawn implements Piece {
     }
 
     @Override
-    public void kill() {
-        this.dead = true;
-    }
-
-    @Override
     public PieceType getType() {
         return PieceType.PAWN;
     }
@@ -45,5 +34,16 @@ public class Pawn implements Piece {
     @Override
     public Color getColor() {
         return color;
+    }
+
+    @Override
+    public List<Coordinate> getPossibleDeltaCoordinates() {
+
+        if(this.color == Color.BLACK) {
+            return this.possibleDeltaCoordinates.stream()
+                    .map(coordinate -> new Coordinate(coordinate.x, coordinate.y *= -1)).toList();
+        }
+
+        return this.possibleDeltaCoordinates;
     }
 }

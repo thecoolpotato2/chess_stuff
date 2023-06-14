@@ -25,4 +25,8 @@ public class Coordinate {
     public Direction getDirectionToOtherCoordinate(Coordinate other) {
         return new Direction(other.x - this.x, other.y - this.y);
     }
+
+    public Coordinate addDirection(Direction direction) {
+        return new Coordinate(this.x + direction.x, this.y + direction.y);
+    }
 }

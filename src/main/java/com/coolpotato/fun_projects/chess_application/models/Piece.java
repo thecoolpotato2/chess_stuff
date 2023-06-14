@@ -1,19 +1,47 @@
 package com.coolpotato.fun_projects.chess_application.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //This class is meant to be inherited by each chess piece
-public interface Piece {
+public abstract class Piece {
+    private boolean dead;
+    protected Color color;
+    protected ArrayList<Coordinate> possibleDeltaCoordinates;
 
-    boolean isDead();
+    private Coordinate currentLocation;
 
-    int getValue();
+    public Piece(Color color, Coordinate currentLocation) {
+        this.dead = false;
+        this.color = color;
+        this.currentLocation = currentLocation;
+    }
 
-    List<Coordinate> getPossibleDeltaCoordinates();
+    public boolean isDead() {
+        return this.dead;
+    };
 
-    void kill();
+    public abstract int getValue();
 
-    PieceType getType();
+    public List<Coordinate> getPossibleDeltaCoordinates() {
+        return this.possibleDeltaCoordinates;
+    }
 
-    Color getColor();
+    void kill() {
+        this.dead = true;
+    }
+
+    public abstract PieceType getType();
+
+    Color getColor() {
+        return this.color;
+    };
+
+    Coordinate getCurrentLocation() {
+        return this.currentLocation;
+    };
+
+    void setCurrentLocation(Coordinate currentLocation) {
+        this.currentLocation = currentLocation;
+    };
 }

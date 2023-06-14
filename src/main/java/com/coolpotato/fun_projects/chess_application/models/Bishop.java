@@ -3,19 +3,12 @@ package com.coolpotato.fun_projects.chess_application.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Bishop implements Piece {
-    private boolean dead;
-    private Color color;
-    private ArrayList<Coordinate> possibleDeltaCoordinates;
+public class Bishop extends Piece {
 
-    public Bishop(Color color) {
-        this.color = color;
-        this.dead = false;
-        this.possibleDeltaCoordinates = initializePossibleDeltaCoordinates();
-    }
-    @Override
-    public boolean isDead() {
-        return dead;
+
+    public Bishop(Color color, Coordinate currentLocation) {
+        super(color, currentLocation);
+        super.possibleDeltaCoordinates = initializePossibleDeltaCoordinates();
     }
 
     @Override
@@ -29,18 +22,8 @@ public class Bishop implements Piece {
     }
 
     @Override
-    public void kill() {
-        this.dead = true;
-    }
-
-    @Override
     public PieceType getType() {
         return PieceType.BISHOP;
-    }
-
-    @Override
-    public Color getColor() {
-        return this.color;
     }
 
     private static ArrayList<Coordinate> initializePossibleDeltaCoordinates() {

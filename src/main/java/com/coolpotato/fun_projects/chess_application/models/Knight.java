@@ -3,19 +3,11 @@ package com.coolpotato.fun_projects.chess_application.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Knight implements Piece {
-    private boolean dead;
-    private Color color;
-    private ArrayList<Coordinate> possibleDeltaCoordinates;
+public class Knight extends Piece {
 
-    public Knight(Color color) {
-        this.color = color;
-        this.dead = false;
+    public Knight(Color color, Coordinate currentLocation) {
+        super(color, currentLocation);
         this.possibleDeltaCoordinates = initializePossibleDeltaCoordinates();
-    }
-    @Override
-    public boolean isDead() {
-        return dead;
     }
 
     @Override
@@ -29,18 +21,8 @@ public class Knight implements Piece {
     }
 
     @Override
-    public void kill() {
-        this.dead = true;
-    }
-
-    @Override
     public PieceType getType() {
         return PieceType.KNIGHT;
-    }
-
-    @Override
-    public Color getColor() {
-        return this.color;
     }
 
     //This could probably be formularized

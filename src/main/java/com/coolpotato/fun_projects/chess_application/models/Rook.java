@@ -3,17 +3,11 @@ package com.coolpotato.fun_projects.chess_application.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Rook implements Piece {
-    private boolean dead;
-    private Color color;
+public class Rook extends Piece {
 
-    public Rook(Color color) {
-        this.color = color;
-        this.dead = false;
-    }
-    @Override
-    public boolean isDead() {
-        return dead;
+    public Rook(Color color, Coordinate currentLocation) {
+        super(color, currentLocation);
+        this.possibleDeltaCoordinates = initializePossibleDeltaCoordinates();
     }
 
     @Override
@@ -21,8 +15,7 @@ public class Rook implements Piece {
         return 5;
     }
 
-    @Override
-    public List<Coordinate> getPossibleDeltaCoordinates() {
+    private static ArrayList<Coordinate> initializePossibleDeltaCoordinates() {
         ArrayList<Coordinate> deltaCoordinates = new ArrayList<>();
 
         for(int i = 1; i < 8; i++) {
@@ -36,19 +29,8 @@ public class Rook implements Piece {
     }
 
     @Override
-    public void kill() {
-        this.dead = true;
-    }
-
-    @Override
     public PieceType getType() {
         return PieceType.ROOK;
     }
-
-    @Override
-    public Color getColor() {
-        return this.color;
-    }
-
 
 }
