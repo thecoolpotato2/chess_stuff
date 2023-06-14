@@ -76,6 +76,10 @@ public class Board {
         }
         filterMovesCausingCheck(potentialMoves, currentCoordinate);
 
+        //Handle special pawn moves
+        //En passant not currently supported
+        potentialMoves = removeInvalidPawnMoves(potentialMoves, piece);
+
         return potentialMoves;
     }
 
@@ -177,7 +181,7 @@ public class Board {
                 .filter(piece -> piece.getType() == PieceType.PAWN && piece.getColor() != color)
                 .map(p -> (Pawn) p)
                 .anyMatch(p -> {
-                    List<Direction> checkingDirections = p.getCheckingDirections();
+                    List<Direction> checkingDirections = p.getAttackingDirections();
                     return checkingDirections.stream()
                             .anyMatch(d -> p.getCurrentLocation().addDirection(d).equals(kingLocation));
                 });
@@ -230,5 +234,33 @@ public class Board {
             directions.add(new Direction(-1, 0));
 
             return directions;
+    }
+
+    private List<Coordinate> removeInvalidPawnMoves(List<Coordinate> potentialMoves, Piece piece) {
+        if(piece.getType() != PieceType.PAWN) {
+            return potentialMoves;
+        }
+
+        Pawn pawn = (Pawn) piece;
+
+        List<Coordinate> movesAllowedToStay = new ArrayList<>();
+
+        //check attacking moves are allowed
+        //note - these might already be removed from potential moves, but if not, we allow them to stay based on the logic below
+        movesAllowedToStay.addAll(pawn.getAttackingDirections()
+                .stream().map(d -> pawn.getCurrentLocation().addDirection(d))
+                .filter(coordinate -> currentPieces.get(coordinate) != null
+                        && currentPieces.get(coordinate).getColor() != pawn.getColor())
+                .toList());
+
+        if(currentPieces.get(pawn.getCurrentLocation().add(new Coordinate(0, 1))) == null) {
+            movesAllowedToStay.add(new Coordinate(0, 1));
+        }
+
+        if(pawn.isAtStartingPosition() && currentPieces.get(pawn.getCurrentLocation().add(new Coordinate(0, 2))) == null) {
+            movesAllowedToStay.add(new Coordinate(0, 2));
+        }
+
+        return potentialMoves.stream().filter(movesAllowedToStay::contains).toList();
     }
 }
