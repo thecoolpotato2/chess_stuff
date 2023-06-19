@@ -57,6 +57,19 @@ public class Board {
         return pieces;
     }
 
+    public void makeMove(Coordinate from, Coordinate to) {
+        Piece piece = currentPieces.get(from);
+
+        if(!getValidPotentialMoves(from).contains(to)) {
+            System.out.println("That move is not allowed");
+            return;
+        }
+
+        piece.setCurrentLocation(to);
+        currentPieces.remove(from);
+        currentPieces.put(to, piece);
+    }
+
     public List<Coordinate> getValidPotentialMoves(Coordinate currentCoordinate) {
         ArrayList<Coordinate> validPlacements = new ArrayList<>();
 
