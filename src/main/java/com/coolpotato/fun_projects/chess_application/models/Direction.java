@@ -1,10 +1,7 @@
 package com.coolpotato.fun_projects.chess_application.models;
 
-import lombok.Data;
-
 import java.util.Objects;
 
-@Data
 public class Direction {
     int x;
     int y;
@@ -31,5 +28,13 @@ public class Direction {
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 }

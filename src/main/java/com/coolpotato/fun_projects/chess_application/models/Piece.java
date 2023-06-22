@@ -1,5 +1,7 @@
 package com.coolpotato.fun_projects.chess_application.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +9,8 @@ import java.util.List;
 public abstract class Piece {
     private boolean dead;
     protected Color color;
+
+    @JsonIgnore
     protected ArrayList<Coordinate> possibleDeltaCoordinates;
 
     private Coordinate currentLocation;
@@ -47,7 +51,7 @@ public abstract class Piece {
 
     boolean isPossibleMove(Direction direction) {
         boolean possibleMove = false;
-        return this.getPossibleDeltaCoordinates().stream().map(c -> new Direction(c.x, c.y))
+        return this.getPossibleDeltaCoordinates().stream().map(c -> new Direction(c.getX(), c.getY()))
                 .filter(d -> d.equals(direction)).findAny().isPresent();
     }
 }

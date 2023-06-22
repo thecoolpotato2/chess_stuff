@@ -1,11 +1,14 @@
 package com.coolpotato.fun_projects.chess_application.models;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Component
 public class Board {
     private HashMap<Coordinate, Piece> currentPieces;
 
@@ -55,6 +58,10 @@ public class Board {
 
 
         return pieces;
+    }
+
+    public HashMap<Coordinate, Piece> getCurrentPieces() {
+        return this.currentPieces;
     }
 
     public void makeMove(Coordinate from, Coordinate to) {

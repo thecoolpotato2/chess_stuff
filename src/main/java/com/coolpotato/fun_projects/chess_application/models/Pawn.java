@@ -1,10 +1,16 @@
 package com.coolpotato.fun_projects.chess_application.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Pawn extends Piece {
+
+    @JsonIgnore
     private final List<Direction> checkingDirections;
+
+    @JsonIgnore
     private final List<Direction> passiveDirections;
 
     public Pawn(Color color, Coordinate currentLocation) {
@@ -45,12 +51,13 @@ public class Pawn extends Piece {
 
         if(this.color == Color.BLACK) {
             return this.possibleDeltaCoordinates.stream()
-                    .map(coordinate -> new Coordinate(coordinate.x, coordinate.y *= -1)).toList();
+                    .map(coordinate -> new Coordinate(coordinate.getX(), coordinate.getY() * -1)).toList();
         }
 
         return this.possibleDeltaCoordinates;
     }
 
+    @JsonIgnore
     public List<Direction> getAttackingDirections() {
         return this.color == Color.WHITE ? checkingDirections : checkingDirections.stream()
                 .map(c -> new Direction(c.x, -1 * c.y)).toList();
