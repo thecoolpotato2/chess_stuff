@@ -1,4 +1,6 @@
 import { Component, ReactNode } from "react";
+import Piece from "./Piece";
+import PieceType from "./PieceType"
 
 class Board extends Component {
     readonly color = {
@@ -28,13 +30,20 @@ class Board extends Component {
 
 
     render() {
+        const pieceProps = { // make sure all required component's inputs/Props keys&types match
+            pieceType: PieceType.Bishop
+          }
+
         return (
+
             <div>
             {
                 this.boardColors?.map((innerArray, i) => (
                     <div key={i} className="rowC">
                     {innerArray?.map((color, i) =>
-                    <div key={i} className="square" style={{ background: color }}></div>)}
+                    <div key={i} className="square" style={{ background: color }}>
+                        {i == 2 && <Piece {...pieceProps}/>}
+                    </div>)}
                     <br/>
                     </div>
                     

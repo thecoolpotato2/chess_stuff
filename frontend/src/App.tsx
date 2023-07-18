@@ -3,6 +3,7 @@ import { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Board from './Board';
+import Bishop from './Bishop';
 
 function App() {
   let [pieces, setPieces] = useState<Object>();
@@ -27,6 +28,7 @@ function App() {
           <button onClick={fetchChessData}>Get Chess Data</button>
         </section>
         <section>
+          <Bishop />
           <Board />
         </section>
         <section>
